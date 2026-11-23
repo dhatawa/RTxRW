@@ -1,0 +1,274 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+@source '../../app/**/*.php';
+
+/*
+ * RTxRW design tokens
+ * Civic, tenang, terstruktur. Warna dipakai untuk makna (status, aksi), bukan dekorasi.
+ */
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    --color-primary: #174a3a;
+    --color-primary-strong: #0f3a2d;
+    --color-primary-soft: #e8efea;
+    --color-secondary: #6b8f71;
+    --color-secondary-soft: #eef3ef;
+
+    --color-canvas: #f7f8f5;
+    --color-surface: #ffffff;
+    --color-ink: #252b28;
+    --color-ink-muted: #545c58;
+    --color-ink-subtle: #7d8580;
+    --color-line: #e5e8e4;
+    --color-line-strong: #c9cfca;
+
+    --color-warning: #8a5a0b;
+    --color-warning-soft: #fbf2df;
+    --color-warning-line: #e9cf96;
+    --color-danger: #9d362d;
+    --color-danger-soft: #f9e9e6;
+    --color-danger-line: #e6b5ae;
+    --color-info: #36556b;
+    --color-info-soft: #eaf0f3;
+    --color-info-line: #bccbd6;
+
+    --color-focus: #f3c83c;
+
+    --radius-sm: 3px;
+    --radius-md: 5px;
+    --radius-lg: 8px;
+
+    --text-2xs: 0.6875rem;
+    --text-2xs--line-height: 1rem;
+}
+
+@layer base {
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-rendering: optimizeLegibility;
+    }
+
+    body {
+        @apply bg-canvas text-ink font-sans antialiased;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    h1, h2, h3, h4 {
+        @apply text-ink;
+        letter-spacing: -0.015em;
+        line-height: 1.2;
+    }
+
+    a {
+        @apply text-primary underline decoration-1 underline-offset-[3px];
+    }
+
+    a:hover {
+        text-decoration-thickness: 2px;
+    }
+
+    /* Fokus yang jelas dan konsisten (pola GOV.UK): kuning + garis gelap. */
+    :focus-visible {
+        outline: 3px solid var(--color-focus);
+        outline-offset: 0;
+        box-shadow: 0 0 0 5px var(--color-ink);
+    }
+
+    a:focus-visible {
+        background-color: var(--color-focus);
+        color: var(--color-ink);
+        box-shadow: 0 3px 0 var(--color-ink);
+        outline: none;
+        text-decoration: none;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    ::selection {
+        background: var(--color-primary-soft);
+    }
+}
+
+@layer components {
+    /* Tipografi */
+    .eyebrow {
+        @apply text-xs font-semibold uppercase tracking-[0.08em] text-ink-subtle;
+    }
+
+    .prose-civic p {
+        @apply mb-4 max-w-prose text-ink-muted;
+    }
+
+    .prose-civic h2 {
+        @apply mt-10 mb-3 text-xl font-semibold;
+    }
+
+    .prose-civic ul {
+        @apply mb-4 list-disc space-y-1 pl-5 text-ink-muted;
+    }
+
+    .prose-civic ol {
+        @apply mb-4 list-decimal space-y-1 pl-5 text-ink-muted;
+    }
+
+    /* Tombol */
+    .btn {
+        @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-md border px-4 py-2 text-[0.9375rem] font-semibold leading-tight no-underline transition-colors select-none;
+    }
+
+    .btn:disabled,
+    .btn[aria-disabled='true'] {
+        @apply cursor-not-allowed opacity-50;
+    }
+
+    .btn-primary {
+        @apply border-primary bg-primary text-white shadow-[0_2px_0_var(--color-primary-strong)];
+    }
+
+    .btn-primary:hover {
+        @apply bg-primary-strong text-white;
+    }
+
+    .btn-secondary {
+        @apply border-line-strong bg-surface text-ink;
+    }
+
+    .btn-secondary:hover {
+        @apply border-ink-subtle bg-canvas text-ink;
+    }
+
+    .btn-danger {
+        @apply border-danger bg-danger text-white;
+    }
+
+    .btn-danger:hover {
+        @apply bg-[#83291f] text-white;
+    }
+
+    .btn-ghost {
+        @apply border-transparent bg-transparent px-2 text-primary underline decoration-1 underline-offset-[3px];
+    }
+
+    .btn-ghost:hover {
+        @apply bg-primary-soft;
+    }
+
+    .btn-sm {
+        @apply min-h-9 px-3 py-1.5 text-sm;
+    }
+
+    /* Form */
+    .field-label {
+        @apply mb-1 block text-[0.9375rem] font-semibold text-ink;
+    }
+
+    .field-hint {
+        @apply mb-2 block text-sm text-ink-muted;
+    }
+
+    .field-error {
+        @apply mb-2 flex items-start gap-1.5 text-sm font-semibold text-danger;
+    }
+
+    .input {
+        @apply block min-h-11 w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-base text-ink placeholder:text-ink-subtle;
+    }
+
+    .input:focus {
+        @apply border-ink;
+        outline: 3px solid var(--color-focus);
+        outline-offset: 0;
+        box-shadow: inset 0 0 0 1px var(--color-ink);
+    }
+
+    .input[aria-invalid='true'] {
+        @apply border-danger;
+        box-shadow: inset 0 0 0 1px var(--color-danger);
+    }
+
+    select.input {
+        @apply appearance-none bg-no-repeat pr-10;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23545c58' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-position: right 0.6rem center;
+    }
+
+    .field-group-error {
+        @apply border-l-4 border-danger pl-4;
+    }
+
+    .check {
+        @apply size-5 shrink-0 rounded-sm border-line-strong text-primary accent-primary;
+    }
+
+    /* Permukaan */
+    .panel {
+        @apply rounded-lg border border-line bg-surface;
+    }
+
+    .panel-header {
+        @apply flex items-center justify-between gap-4 border-b border-line px-5 py-3.5;
+    }
+
+    .panel-title {
+        @apply text-base font-semibold;
+    }
+
+    /* Tabel data */
+    .table-civic {
+        @apply w-full border-collapse text-left text-[0.9375rem];
+    }
+
+    .table-civic thead th {
+        @apply border-b border-line-strong px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.06em] text-ink-subtle;
+    }
+
+    .table-civic tbody td {
+        @apply border-b border-line px-4 py-3.5 align-top;
+    }
+
+    .table-civic tbody tr:last-child td {
+        @apply border-b-0;
+    }
+
+    .table-civic tbody tr:hover {
+        @apply bg-canvas;
+    }
+
+    /* Navigasi samping */
+    .nav-link {
+        @apply flex items-center gap-3 rounded-md px-3 py-2 text-[0.9375rem] font-medium text-ink-muted no-underline;
+    }
+
+    .nav-link:hover {
+        @apply bg-canvas text-ink;
+    }
+
+    .nav-link[aria-current='page'] {
+        @apply bg-primary-soft font-semibold text-primary;
+        box-shadow: inset 3px 0 0 var(--color-primary);
+    }
+
+    /* Tab bergaris bawah */
+    .tab {
+        @apply -mb-px inline-flex items-center gap-2 whitespace-nowrap border-b-[3px] border-transparent px-1 pb-2.5 pt-1 text-[0.9375rem] font-medium text-ink-muted no-underline;
+    }
+
+    .tab:hover {
+        @apply text-ink;
+    }
+
+    .tab[aria-current='page'] {
+        @apply border-primary font-semibold text-ink;
+    }
+
+    .count {
+        @apply inline-flex min-w-5 items-center justify-center rounded-full bg-ink px-1.5 text-2xs font-semibold leading-5 text-white;
+    }
+}
