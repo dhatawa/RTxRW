@@ -45,7 +45,9 @@ class LetterTemplateController extends Controller
         $data = $this->validated($request);
 
         $template = DB::transaction(function () use ($request, $letterType, $data) {
-            $version = (int) $letterType->templates()->lockForUpdate()->max('version') + 1;
+            // Kunci baris jenis surat sebagai mutex versi (PostgreSQL melarang FOR UPDATE + MAX()).
+            LetterType::query()->whereKey($letterType->getKey())->lockForUpdate()->first();
+            $version = (int) $letterType->templates()->max('version') + 1;
             $letterType->templates()->update(['is_active' => false]);
 
             $template = $letterType->templates()->create($data + [

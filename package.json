@@ -18,6 +18,8 @@
     },
     "dependencies": {
         "@alpinejs/focus": "^3.17.5",
+        "@supabase/ssr": "^0.12.7",
+        "@supabase/supabase-js": "^2.119.2",
         "alpinejs": "^3.17.5"
     }
 }

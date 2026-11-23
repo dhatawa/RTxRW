@@ -25,8 +25,8 @@ class ResidentController extends Controller
             ->when(in_array($status, ['pending', 'verified', 'rejected'], true), fn ($q) => $q->where('verification_status', $status))
             ->when($search !== '', function ($q) use ($search) {
                 $q->where(function ($q) use ($search) {
-                    $q->where('full_name', 'like', "%{$search}%")
-                        ->orWhere('address', 'like', "%{$search}%");
+                    $q->whereLike('full_name', "%{$search}%")
+                        ->orWhereLike('address', "%{$search}%");
                     // NIK terenkripsi: pencarian NIK hanya bisa persis sama (lewat hash).
                     if (preg_match('/^\d{16}$/', $search)) {
                         $q->orWhere('nik_hash', Resident::hashNik($search));

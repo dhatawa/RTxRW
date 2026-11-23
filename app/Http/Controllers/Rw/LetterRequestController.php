@@ -30,8 +30,8 @@ class LetterRequestController extends Controller
             ->when($request->query('rt'), fn ($q, $id) => $q->where('rt_id', $id))
             ->when($request->query('jenis'), fn ($q, $id) => $q->where('letter_type_id', $id))
             ->when($search !== '', fn ($q) => $q->where(fn ($q) => $q
-                ->where('reference_number', 'like', "%{$search}%")
-                ->orWhereHas('resident', fn ($r) => $r->where('full_name', 'like', "%{$search}%"))));
+                ->whereLike('reference_number', "%{$search}%")
+                ->orWhereHas('resident', fn ($r) => $r->whereLike('full_name', "%{$search}%"))));
 
         match ($tab) {
             'siap-terbit' => $query->status(RequestStatus::Approved)->oldest('rw_decided_at'),

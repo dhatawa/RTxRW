@@ -21,9 +21,9 @@ class IssuanceController extends Controller
             'issued' => IssuedLetter::query()
                 ->with(['letterRequest.letterType', 'letterRequest.resident', 'letterRequest.rt', 'issuer'])
                 ->when($search !== '', fn ($q) => $q->where(fn ($q) => $q
-                    ->where('letter_number', 'like', "%{$search}%")
+                    ->whereLike('letter_number', "%{$search}%")
                     ->orWhere('verification_code', $search)
-                    ->orWhereHas('letterRequest.resident', fn ($r) => $r->where('full_name', 'like', "%{$search}%"))))
+                    ->orWhereHas('letterRequest.resident', fn ($r) => $r->whereLike('full_name', "%{$search}%"))))
                 ->latest('issued_at')->paginate(15)->withQueryString(),
             'search' => $search,
         ]);

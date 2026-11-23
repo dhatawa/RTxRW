@@ -50,7 +50,10 @@ class LetterIssuer
                 $now = now();
                 $year = (int) $now->format('Y');
 
-                $sequence = (int) IssuedLetter::query()->where('year', $year)->lockForUpdate()->max('sequence') + 1;
+                // Kunci baris RW sebagai mutex penomoran (portabel: PostgreSQL melarang FOR UPDATE + MAX()).
+                // Unique index (year, sequence) tetap menjadi pengaman terakhir.
+                Rw::query()->whereKey(Rw::current()->getKey())->lockForUpdate()->first();
+                $sequence = (int) IssuedLetter::query()->where('year', $year)->max('sequence') + 1;
                 $number = $this->formatNumber($sequence, $request, $now->month, $year);
                 $code = $this->verificationCode();
 

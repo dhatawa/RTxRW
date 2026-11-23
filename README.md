@@ -69,6 +69,13 @@ Semua akun memakai kata sandi `password123`.
 | Ketua RT 01 | `rt01@rtxrw.test` | Ada pengajuan menunggu dan 1 warga menunggu verifikasi |
 | Ketua RT 02–04 | `rt02@rtxrw.test` … `rt04@rtxrw.test` | |
 | Warga RT 01 | `warga@rtxrw.test` | Punya surat terbit, pengajuan yang perlu diperbaiki, dan draf |
+| 100 warga tambahan | `warga001@rtxrw.test` … `warga100@rtxrw.test` | Tersebar merata di RT 01–04; ±85% terverifikasi, sisanya menunggu atau perlu perbaikan |
+
+Selain itu tersedia 50 pengajuan tambahan dengan riwayat lengkap (Juli–November): selesai, terbit, siap terbit, menunggu RT/RW, perlu perbaikan, ditolak, dan draf. Sebagian sempat melalui siklus perbaikan. Data ini dibuat oleh [BulkDemoSeeder](database/seeders/BulkDemoSeeder.php) lewat alur persetujuan yang sebenarnya, sehingga riwayat, audit log, notifikasi, dan PDF-nya konsisten. Seeder ini juga bisa dijalankan sendiri dan aman diulang (akan melanjutkan bila sebelumnya terputus):
+
+```bash
+php artisan db:seed --class=BulkDemoSeeder
+```
 
 Semua nama, NIK, dan alamat di data demo adalah fiktif.
 

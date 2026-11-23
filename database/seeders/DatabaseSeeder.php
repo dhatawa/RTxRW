@@ -13,6 +13,7 @@ use App\Models\Rw;
 use App\Models\User;
 use App\Services\LetterIssuer;
 use App\Services\LetterWorkflow;
+use Database\Seeders\Support\SamplePdf;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -110,6 +111,10 @@ class DatabaseSeeder extends Seeder
             $residents[$p[0]] = $resident;
         }
 
+        // 100 warga tambahan + 50 pengajuan dengan riwayat untuk demo laporan & daftar.
+        // Dijalankan lebih dulu karena tanggalnya lebih lama, agar nomor surat urut kronologis.
+        $this->call(BulkDemoSeeder::class);
+
         $this->seedRequests($residents, $rwHead);
     }
 
@@ -132,7 +137,7 @@ class DatabaseSeeder extends Seeder
 
             foreach ($type->requirements as $req) {
                 $path = 'documents/'.$request->public_id.'/'.bin2hex(random_bytes(12)).'.pdf';
-                Storage::disk('local')->put($path, $this->samplePdf($req->name));
+                Storage::disk('local')->put($path, SamplePdf::make($req->name));
                 $request->documents()->create([
                     'letter_requirement_id' => $req->id, 'original_name' => str($req->name)->slug().'.pdf',
                     'path' => $path, 'mime_type' => 'application/pdf', 'size' => 900, 'uploaded_by' => $resident->user_id,
@@ -225,32 +230,5 @@ class DatabaseSeeder extends Seeder
 
         Carbon::setTestNow();
         Auth::forgetUser();
-    }
-
-    /** PDF satu halaman sebagai contoh dokumen persyaratan. */
-    private function samplePdf(string $label): string
-    {
-        $text = 'Contoh dokumen: '.preg_replace('/[^A-Za-z0-9 \/.-]/', '', $label);
-        $stream = "BT /F1 14 Tf 72 760 Td ({$text}) Tj ET";
-        $objects = [
-            '<< /Type /Catalog /Pages 2 0 R >>',
-            '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-            '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
-            '<< /Length '.strlen($stream)." >>\nstream\n{$stream}\nendstream",
-            '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
-        ];
-        $pdf = "%PDF-1.4\n";
-        $offsets = [];
-        foreach ($objects as $i => $obj) {
-            $offsets[] = strlen($pdf);
-            $pdf .= ($i + 1)." 0 obj\n{$obj}\nendobj\n";
-        }
-        $xref = strlen($pdf);
-        $pdf .= "xref\n0 ".(count($objects) + 1)."\n0000000000 65535 f \n";
-        foreach ($offsets as $o) {
-            $pdf .= sprintf("%010d 00000 n \n", $o);
-        }
-
-        return $pdf."trailer\n<< /Size ".(count($objects) + 1)." /Root 1 0 R >>\nstartxref\n{$xref}\n%%EOF";
     }
 }

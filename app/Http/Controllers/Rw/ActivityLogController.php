@@ -32,8 +32,8 @@ class ActivityLogController extends Controller
         $logs = ActivityLog::query()->with('user')
             ->when(array_key_exists((string) $group, self::GROUPS), fn ($q) => $q->where('action', 'like', $group.'.%'))
             ->when($search !== '', fn ($q) => $q->where(fn ($q) => $q
-                ->where('description', 'like', "%{$search}%")
-                ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"))))
+                ->whereLike('description', "%{$search}%")
+                ->orWhereHas('user', fn ($u) => $u->whereLike('name', "%{$search}%"))))
             ->when($request->date('tanggal'), fn ($q, $d) => $q->whereDate('created_at', $d))
             ->latest('created_at')->latest('id')
             ->paginate(30)->withQueryString();
